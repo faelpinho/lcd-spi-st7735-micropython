@@ -33,7 +33,7 @@ def TFTColor( aR, aG, aB ) :
      This assumes rgb 565 layout and will be incorrect for bgr.'''
   return ((aR & 0xF8) << 8) | ((aG & 0xFC) << 3) | (aB >> 3)
 
-#screenSize = (128, 160)
+ScreenSize = (128, 128)
 
 class TFT(object) :
   """Sainsmart TFT 7735 display driver."""
@@ -104,10 +104,10 @@ class TFT(object) :
     '''Create a 565 rgb TFTColor value'''
     return TFTColor(aR, aG, aB)
 
-  def __init__( self, spi, screenSize, aDC, aReset, aCS) :
+  def __init__( self, spi, aDC, aReset, aCS ) :
     """aLoc SPI pin location is either 1 for 'X' or 2 for 'Y'.
        aDC is the DC pin and aReset is the reset pin."""
-    self._size = screenSize
+    self._size = ScreenSize
     self._offset = bytearray([0,0])
     self.rotate = 0                    #Vertical with top toward pins.
     self._rgb = True                   #color order of rgb.
@@ -121,7 +121,9 @@ class TFT(object) :
     self.colorData = bytearray(2)
     self.windowLocData = bytearray(4)
 
-  def size( self ) :
+  def size( self, newSize = ScreenSize ) :
+    if (newSize != ScreenSize):
+        self._size = newSize
     return self._size
 
 #   @micropython.native
@@ -513,7 +515,7 @@ class TFT(object) :
 
   def initb( self ) :
     '''Initialize blue tab version.'''
-    self._size = (screenSize[0] + 2, screenSize[1] + 1)
+    self._size = (ScreenSize[0] + 2, ScreenSize[1] + 1)
     self._reset()
     self._writecommand(TFT.SWRESET)              #Software reset.
     time.sleep_us(50)
@@ -707,7 +709,7 @@ class TFT(object) :
 
   def initb2( self ) :
     '''Initialize another blue tab version.'''
-    self._size = (screenSize[0] + 2, screenSize[1] + 1)
+    self._size = (ScreenSize[0] + 2, ScreenSize[1] + 1)
     self._offset[0] = 2
     self._offset[1] = 1
     self._reset()
@@ -902,23 +904,23 @@ class TFT(object) :
 
     self.cs(1)
 
-def maker(  ) :
-  t = TFT(1, "X1", "X2")
-  print("Initializing")
-  t.initr()
-  t.fill(0)
-  return t
+#def maker(  ) :
+#  t = TFT(1, "X1", "X2")
+#  print("Initializing")
+#  t.initr()
+#  t.fill(0)
+#  return t
 
-def makeb(  ) :
-  t = TFT(1, "X1", "X2")
-  print("Initializing")
-  t.initb()
-  t.fill(0)
-  return t
+#def makeb(  ) :
+#  t = TFT(1, "X1", "X2")
+#  print("Initializing")
+#  t.initb()
+#  t.fill(0)
+#  return t
 
-def makeg(  ) :
-  t = TFT(1, "X1", "X2")
-  print("Initializing")
-  t.initg()
-  t.fill(0)
-  return t
+#def makeg(  ) :
+#  t = TFT(1, "X1", "X2")
+#  print("Initializing")
+#  t.initg()
+#  t.fill(0)
+#  return t

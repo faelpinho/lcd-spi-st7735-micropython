@@ -1,18 +1,24 @@
-from ST7735 import TFT
-from sysfont import sysfont
 from machine import SPI,Pin
+from ST7735 import TFT
+from font import sysfont, seriffont, terminalfont
 import time
 import math
 
-spi = SPI(1, baudrate=20000000, polarity=0, phase=0, sck=Pin(10), mosi=Pin(11), miso=None) # 10, 11, none
+# 20 Mhz = 20_000_000 (padrão), 51_200_000, 80_000_000
+spi = SPI(0, baudrate=80_000_000, polarity=0, phase=0, bits=8, sck=Pin(6), mosi=Pin(7), miso=None) # 10, 11, none
 
-ScreenSize = (128, 160); # 128x160 / 128x128
-tft=TFT(spi, ScreenSize, 16, 17, 18) # dc16, rst17, cs18
+tft = TFT(spi, 15, 14, 13) # dc, rst, cs: 15, 14, 13 ou 16, 17, 18
 
-#tft.initg() # lcd 1.77', 128x160
-tft.initr() # lcd 0.85', 128x128
+#tft.initg() # lcd 1.77' 128x160
+#tft.initr()
+#tft.initb()
+tft.initb2() # lcd 0.85' 128x160
 
-tft.rgb(True);
+# Usar para o lcd 0.85'
+tft.invertcolor(True);
+
+tft.size((128, 128)) # 128x160 / 128x128
+tft.rgb(False); # False for 0.85', True for 1.77'
 tft.rotation(2);
 
 def testlines(color):
@@ -164,6 +170,44 @@ def test_main():
     testtriangles()
     time.sleep_ms(1000)
 
-    tft.fill(TFT.PURPLE)
+    while (True):
+        test()
 
-test_main()
+def test():
+    message = "Hello World manow!"
+    fontSize = 2
+    fontType = sysfont # sysfont (the best), terminalfont, seriffont
+    x = 0
+    y = 20
+
+    while (True):
+        tft.fill(TFT.BLACK)
+        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        time.sleep_ms(1000)
+
+        tft.fill(TFT.RED)
+        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        time.sleep_ms(1000)
+
+        tft.fill(TFT.GREEN)
+        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        time.sleep_ms(1000)
+
+        tft.fill(TFT.BLUE)
+        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        time.sleep_ms(1000)
+
+        tft.fill(TFT.YELLOW)
+        tft.text((x, y), message, TFT.BLACK, fontType, fontSize)
+        time.sleep_ms(1000)
+
+        tft.fill(TFT.PURPLE)
+        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        time.sleep_ms(1000)
+
+        tft.fill(TFT.WHITE)
+        tft.text((x, y), message, TFT.BLACK, fontType, fontSize)
+        time.sleep_ms(1000)
+
+test()
+#test_main()
