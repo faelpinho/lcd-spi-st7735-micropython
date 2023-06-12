@@ -4,21 +4,29 @@ from font import sysfont, seriffont, terminalfont
 import time
 import math
 
-# 20 Mhz = 20_000_000 (padrão), 51_200_000, 80_000_000
-spi = SPI(0, baudrate=80_000_000, polarity=0, phase=0, bits=8, sck=Pin(6), mosi=Pin(7), miso=None) # 10, 11, none
+# Fiz pra testar 2 displays com o mesmo script pq sim.
+display085 = True
 
-tft = TFT(spi, 15, 14, 13) # dc, rst, cs: 15, 14, 13 ou 16, 17, 18
+TFT_CLK =   const(6)
+TFT_MOSI =  const(7)
+TFT_DC =    const(15)
+TFT_RST =   const(14)
+TFT_CS =    const(13)
 
-#tft.initg() # lcd 1.77' 128x160
-#tft.initr()
-#tft.initb()
-tft.initb2() # lcd 0.85' 128x160
+# 20 Mhz = 20_000_000 (padrão), 60_000_000, 80_000_000 (0.85' works with 80Mhz max, 1.77' works 60Mhz max')
+spi = SPI(0, baudrate=60_000_000, polarity=0, phase=0, bits=8, sck=Pin(TFT_CLK), mosi=Pin(TFT_MOSI), miso=None)
 
-# Usar para o lcd 0.85'
-tft.invertcolor(True);
+tft = TFT(spi, TFT_DC, TFT_RST, TFT_CS) # dc, rst, cs: 15, 14, 13 ou 16, 17, 18.
 
-tft.size((128, 128)) # 128x160 / 128x128
-tft.rgb(False); # False for 0.85', True for 1.77'
+# Na vdd, no Aliexpress dizia que o display 0.85' (ST7735) era 128x160, mas
+# depois desses testes confirmei ser na verdade 128x128.
+if (display085):
+    tft.initb2() # lcd 0.85'
+    tft.invertcolor(True)
+    tft.rgb(False)
+else:
+    tft.initg() # lcd 1.77' 128x160
+
 tft.rotation(2);
 
 def testlines(color):
@@ -173,40 +181,52 @@ def test_main():
     while (True):
         test()
 
-def test():
-    message = "Hello World manow!"
+def printhello():
+    x = 0
+    y = 0
+    message = "Hello World"
     fontSize = 2
     fontType = sysfont # sysfont (the best), terminalfont, seriffont
-    x = 0
-    y = 20
+    tft.text((x, y), message, TFT.GRAY, fontType, fontSize) # 1
+    tft.text((x, y+15), message, TFT.MAROON, fontType, fontSize)
+    tft.text((x, y+30), message, TFT.GRAY, fontType, fontSize)
+    tft.text((x, y+45), message, TFT.MAROON, fontType, fontSize)
+    tft.text((x, y+60), message, TFT.GRAY, fontType, fontSize) # 5
+    tft.text((x, y+75), message, TFT.MAROON, fontType, fontSize)
+    tft.text((x, y+90), message, TFT.GRAY, fontType, fontSize) # 7 (retrato 128x128)
+    tft.text((x, y+105), message, TFT.MAROON, fontType, fontSize) # 8 (paisagem 128x160, retrato 128x128)
+    tft.text((x, y+120), message, TFT.GRAY, fontType, fontSize) # 9 (metade fora do frame 128x128)
+    tft.text((x, y+135), message, TFT.MAROON, fontType, fontSize) # 10 (retrato 128x160)
+    tft.text((x, y+150), message, TFT.NAVY, fontType, fontSize) # 11 (metade fora do frame 128x160)
 
+def test():
     while (True):
         tft.fill(TFT.BLACK)
-        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        printhello()
         time.sleep_ms(1000)
 
         tft.fill(TFT.RED)
-        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        printhello()
         time.sleep_ms(1000)
 
         tft.fill(TFT.GREEN)
-        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        printhello()
         time.sleep_ms(1000)
 
         tft.fill(TFT.BLUE)
-        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        printhello()
         time.sleep_ms(1000)
 
         tft.fill(TFT.YELLOW)
-        tft.text((x, y), message, TFT.BLACK, fontType, fontSize)
+        printhello()
         time.sleep_ms(1000)
 
         tft.fill(TFT.PURPLE)
-        tft.text((x, y), message, TFT.WHITE, fontType, fontSize)
+        printhello()
         time.sleep_ms(1000)
 
         tft.fill(TFT.WHITE)
-        tft.text((x, y), message, TFT.BLACK, fontType, fontSize)
+        printhello()
         time.sleep_ms(1000)
 
 test()

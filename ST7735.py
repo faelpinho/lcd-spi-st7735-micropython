@@ -33,7 +33,7 @@ def TFTColor( aR, aG, aB ) :
      This assumes rgb 565 layout and will be incorrect for bgr.'''
   return ((aR & 0xF8) << 8) | ((aG & 0xFC) << 3) | (aB >> 3)
 
-ScreenSize = (128, 128)
+ScreenSize = (128, 160)
 
 class TFT(object) :
   """Sainsmart TFT 7735 display driver."""
