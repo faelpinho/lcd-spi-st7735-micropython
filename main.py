@@ -1,4 +1,4 @@
-from machine import SPI,Pin
+from machine import UART,SPI,Pin
 from ST7735 import TFT
 from font import sysfont, seriffont, terminalfont
 import time
@@ -7,16 +7,17 @@ import math
 # Fiz pra testar 2 displays com o mesmo script pq sim.
 display085 = True
 
+# pins: sck 6, tx/mosi 7, mosi/dc 15, rst 14, cs 5.
 TFT_CLK =   const(6)
 TFT_MOSI =  const(7)
 TFT_DC =    const(15)
 TFT_RST =   const(14)
-TFT_CS =    const(13)
+TFT_CS =    const(5)
 
-# 20 Mhz = 20_000_000 (padrão), 60_000_000, 80_000_000 (0.85' works with 80Mhz max, 1.77' works 60Mhz max')
-spi = SPI(0, baudrate=60_000_000, polarity=0, phase=0, bits=8, sck=Pin(TFT_CLK), mosi=Pin(TFT_MOSI), miso=None)
+# 20 Mhz = 20_000_000 (default), 51_200_000, 80_000_000
+spi = SPI(0, baudrate=80_000_000, polarity=0, phase=0, bits=8, sck=Pin(TFT_CLK), mosi=Pin(TFT_MOSI), miso=None)
 
-tft = TFT(spi, TFT_DC, TFT_RST, TFT_CS) # dc, rst, cs: 15, 14, 13 ou 16, 17, 18.
+tft = TFT(spi, TFT_DC, TFT_RST, TFT_CS)
 
 # Na vdd, no Aliexpress dizia que o display 0.85' (ST7735) era 128x160, mas
 # depois desses testes confirmei ser na verdade 128x128.
@@ -28,6 +29,8 @@ else:
     tft.initg() # lcd 1.77' 128x160
 
 tft.rotation(2);
+
+print('Hello from Pi Pico using Python. Running: Display SPI ST7735.')
 
 def testlines(color):
     tft.fill(TFT.BLACK)
